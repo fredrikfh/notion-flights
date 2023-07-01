@@ -1,5 +1,6 @@
 import quopri
 import re
+from functions.console import log
 from functions.create_flight_dict import create_flight_dict
 
 from functions.parse_date import parse_date
@@ -8,10 +9,11 @@ from functions.parse_date import parse_date
 def specific_dates(text):
 
     # for i in range(len(text)):
-    #     print(i, text[i])
+    #     print("TOT"+str(i)+": ", text[i])
 
     flight_list_dict = []
     for i in range(0, len(text), 4):
+        # print(i, text)
 
         metadata = text[i].split(" ·")
         old_price = int(metadata[-1].split("kr")[-1])
@@ -32,6 +34,7 @@ def specific_dates(text):
         # loop three times
         for j in range(3):
             flight = text[i+j+1]
+            # print("FLIGHT-"+str(j)+": ", flight)
 
             hours = None
             if flight[13:15] == "+1":
@@ -43,10 +46,18 @@ def specific_dates(text):
                 flight = flight[13:]
 
             flight = flight.split(" ·")
+            # print("FLIGHT-"+str(j)+": ", flight)
 
             airlines = flight[0].split(", ")
-            stops = flight[1]
-            route, price = flight[2].split("kr")
+            stops = flight[1].split(" ")[0]
+            if stops == "Direkte":
+                stops = 0
+            stops = int(stops)
+            if len(flight) == 3:
+                route, price = flight[2].split("kr")
+            else:
+                log("Unknown flight format", "danger")
+                continue
 
             flight_list_dict.append(create_flight_dict(
                 journey=journey,
@@ -57,7 +68,7 @@ def specific_dates(text):
                 old_price=old_price,
                 duration=hours,
                 airlines=airlines,
-                stops=stops,
+                connections=stops,
                 route=route,
                 type="Specific",
                 value="Unknown"

@@ -13,7 +13,7 @@ COLORS = {
 def log(message, status=None):
     time_now = datetime.now().strftime("%H:%M:%S")
     file_name = inspect.stack()[1].filename.split("/")[-1]
-    file_name = file_name.ljust(40)[:40]
+    file_name = file_name.ljust(30)[:30]
 
     color = COLORS.get(status, "")
 

@@ -1,16 +1,17 @@
 import datetime
+import email
 import imaplib
 import os
-from email.header import decode_header
-import email
 import quopri
+from contextlib import closing
+from email.header import decode_header
+
 from dateutil.parser import parse
+
 from functions.console import log
 from functions.get_html import get_data_from_html
 from functions.mail_parsers.non_specific_dates import non_specific_dates
 from functions.mail_parsers.specific_dates import specific_dates
-from contextlib import closing
-
 from functions.parse_date import parse_date
 
 TEXT_PLAIN = "text/plain"
@@ -87,8 +88,8 @@ def get_mails(number: int):
 
             return parsed_data
 
-    except imaplib.IMAP4.error as e:
-        log(f"An error occurred: {e}", "danger")
+    except imaplib.IMAP4.error as error:
+        log(f"An error occurred: {error}", "danger")
         return None
 
 

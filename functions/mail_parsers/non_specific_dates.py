@@ -37,7 +37,10 @@ def non_specific_dates(text: str, route: str):
         price = int(text[i+1][6:])
         info = text[i+2].split(' ·')
         airlines = info[0].split(',')
-        stops = info[1]
+        connections = info[1].split(" ")[0]
+        if connections == "Direkte":
+            connections = 0
+        connections = int(connections)
         route = info[2]
         duration = info[3]
 
@@ -50,7 +53,7 @@ def non_specific_dates(text: str, route: str):
             old_price=price,
             duration=info[3],
             airlines=info[0].split(','),
-            stops=info[1],
+            connections=connections,
             route=info[2],
             type=type,
             value=get_value(price, value)
