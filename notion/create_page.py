@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional
 
 
-def create_notion_page(journey: str, route: str, old_price: int, new_price: int, operator, start_date, end_date, duration: str, stopp: str, destination, trend, value, cabin, type):
+def create_page(journey: str, route: str, old_price: int, new_price: int, operator, start_date, end_date, duration: str, connections: int, destination, trend, cabin, type):
 
     new_page = {
         "Route": {"title": [{"text": {"content": journey}}]},
@@ -12,11 +12,10 @@ def create_notion_page(journey: str, route: str, old_price: int, new_price: int,
         "Date": {"date": {"start": start_date, "end": end_date}},
         "Duration": {"rich_text": [{"text": {"content": duration}}]},
         "Airports": {"rich_text": [{"text": {"content": route}}]},
-        "Stopp": {"rich_text": [{"text": {"content": stopp}}]},
+        "Connections": {"number": connections},
         "Old price": {"number": old_price},
         "Destination": {"relation": destination},
         "Trend": {"relation": trend},
-        "Value": {"relation": value},
         "Cabin": {"select": {"name": cabin}},
         "Type": {"select": {"name": type}},
     }

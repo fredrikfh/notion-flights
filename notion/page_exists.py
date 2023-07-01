@@ -4,7 +4,7 @@ from notion.cache import get_database_data
 from functions.console import log
 
 
-def check_notion_db_record_exists(notion, page) -> bool:
+def page_exists(notion, page) -> bool:
 
     existing_record = False
     data = get_database_data(notion, os.getenv("NOTION_DB_TRAVEL"))

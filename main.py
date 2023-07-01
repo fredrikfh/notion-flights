@@ -1,12 +1,14 @@
 import os
+import sys
 
 from dotenv import load_dotenv
 from notion_client import Client
 from functions.console import log
 
 from functions.get_mails import get_mails
-from notion.create_notion_db_record import create_notion_db_record
-from notion.create_notion_page import create_notion_page
+from notion.cache import fetch_databases_concurrently
+from notion.upload_page import upload_page, upload_page_concurrently
+from notion.create_page import create_page
 from notion.find_relation import find_destination, find_operator
 
 # Define mapping for trends and values
@@ -25,10 +27,14 @@ value_mapping = {
 
 load_dotenv()  # Use context manager
 notion = Client(auth=os.getenv('NOTION_KEY'))
-flight_data = get_mails(11)
+
+flight_data = get_mails(int(sys.argv[1]) if len(sys.argv) > 1 else 10)
 
 if not flight_data:
-    log("No emails found", "danger")
+    log("No emails found", "warning")
+
+fetch_databases_concurrently(notion, [os.getenv('NOTION_DB_TRAVEL'), os.getenv(
+    'NOTION_DB_OPERATOR'), os.getenv('NOTION_DB_DESTINATION')])
 
 for mail in flight_data:
 
@@ -53,21 +59,23 @@ for mail in flight_data:
         value = [next(({"id": find_operator(notion, value_name)[0]}
                       for value_name, condition in value_mapping.items() if condition(trip.get("Value", ""))), None)]
 
-        page = create_notion_page(
+        if trip.get("Old Price") == trip.get("New Price"):
+            trend = value
+
+        page = create_page(
             journey=trip.get("Journey"),
             route=trip.get("Route"),
             old_price=trip.get("Old Price"),
             new_price=trip.get("New Price"),
             duration=trip.get("Duration"),
-            stopp=trip.get("Stops"),
+            connections=trip.get("Connections"),
             start_date=trip.get("Start Date"),
             end_date=trip.get("End Date"),
             cabin=trip.get("Cabin"),
             type=trip.get("Type"),
             operator=operators,
             destination=destinations,
-            trend=trend,
-            value=value,
+            trend=trend
         )
 
-        create_notion_db_record(notion, page)
+        upload_page_concurrently(notion, page)
