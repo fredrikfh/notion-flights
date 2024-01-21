@@ -7,7 +7,10 @@ months_no_abbr = get_month_names('abbreviated', locale='no')
 
 month_to_num = {name.lower(): i for i, name in months_no_wide.items() if name}
 month_to_num.update(
-    {name.lower(): i for i, name in months_no_abbr.items() if name})
+    {name.lower().replace('.', ''): i for i, name in months_no_abbr.items() if name})
+
+month_to_num.update(
+    {name.lower() + '.': i for i, name in months_no_abbr.items() if name})
 
 
 def is_valid_date(year, month, day):
@@ -28,8 +31,9 @@ def extract_date(date_string, current_year):
         return None
     day, month = day_month
     day_int = int(day.replace(".", ""))
-    if is_valid_date(current_year, month_to_num[month.lower()], day_int):
-        return datetime.date(current_year, month_to_num[month.lower()], day_int).isoformat()
+    month_key = month.lower().rstrip('.')
+    if month_key in month_to_num and is_valid_date(current_year, month_to_num[month_key], day_int):
+        return datetime.date(current_year, month_to_num[month_key], day_int).isoformat()
     else:
         print(
             f"WARNING: Invalid date: {day}.{month}.{current_year}. Using None.")
