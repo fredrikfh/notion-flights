@@ -24,9 +24,9 @@ def non_specific_dates(text: str, route: str):
     cabin = metadata[-1]
     type = metadata[0].split(" ")[0]
 
-    print("val1: ", text[-1])
+    # print("val1: ", text[-1])
     value = extract_prices(text[-1])
-    print("val2: ", value)
+    # print("val2: ", value)
 
     # remove first element
     text = text[1:]
@@ -65,7 +65,7 @@ def non_specific_dates(text: str, route: str):
             new_price=price,
             old_price=price,
             duration=info[3],
-            airlines=info[0].split(','),
+            airlines=airlines,
             connections=connections,
             route=info[2],
             type=type,

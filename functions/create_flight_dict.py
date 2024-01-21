@@ -1,5 +1,20 @@
 
-def create_flight_dict(journey, start, end, cabin, new_price, duration, airlines, connections, route, type, value, old_price=0):
+from functions.console import log
+
+
+def create_flight_dict(journey, start, end, cabin, new_price, duration, airlines: list, connections, route, type, value, old_price=0):
+
+    if not isinstance(airlines, list):
+        log("airlines is not a list", "danger")
+        airlines = [airlines]
+
+    print("airlines: ", airlines)
+    for airline in airlines:
+        print("testing", airline)
+        if len(airline) < 3:
+            log("airline is not a string", "danger")
+            airlines.remove(airline)
+
     flight_dict = {
         "Journey": journey,         # "Oslo til London"
         "Start Date": start,        # "2021-10-01"

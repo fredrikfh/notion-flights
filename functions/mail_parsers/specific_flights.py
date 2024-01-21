@@ -48,7 +48,11 @@ def specific_flights(text):
             continue
 
         hours = flight[0]
+
         airlines = flight[1]
+        if not isinstance(airlines, list):
+            airlines = [airlines]
+
         stops = flight[2].split(" ")[0]
         price = flight[3]
 
@@ -62,7 +66,7 @@ def specific_flights(text):
             end=date[1],
             cabin="Unknown",
             new_price=int(price),
-            old_price=-1,
+            old_price=0,
             duration=hours,
             airlines=airlines,
             connections=stops,
@@ -81,8 +85,10 @@ def transform(entry):
     # Splitting data by "·"
     parts = entry.split('·')
 
-    # Extracting airline
+    # Extracting airline and ensuring it's a single string
     airline = parts[0].replace(time, '').strip()
+    if isinstance(airline, list):
+        airline = ' '.join(airline)
 
     # Extracting other details
     details = [part for part in parts[1:-1]]
@@ -126,4 +132,7 @@ def transform_string(s):
     # 3. The rest of the string (e.g., "Tur/retur")
     rest = s.replace(destination, '').replace(date_range, '').strip()
 
-    return [destination, date_range, rest]
+    returnarr = [destination, date_range, rest]
+    # print("returnarr: ", returnarr)
+
+    return returnarr
