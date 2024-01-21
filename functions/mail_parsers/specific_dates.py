@@ -16,7 +16,10 @@ def specific_dates(text):
         # print(i, text)
 
         metadata = text[i].split(" ·")
-        old_price = int(metadata[-1].split("kr")[-1])
+
+        old_price = get_prices_from_string(metadata[-1])[0]
+        # new_price = get_prices_from_string(metadata[-1])[1]
+
         datearr = metadata[0].split(".")
         journey = datearr[0][0:-3]
         date = datearr[0][-3:] + "." + datearr[1] + \
@@ -54,7 +57,11 @@ def specific_dates(text):
                 stops = 0
             stops = int(stops)
             if len(flight) == 3:
-                route, price = flight[2].split("kr")
+                route_and_price = extract_flight_info(flight[2])
+                # print("ROUTE AND PRICE: ", route_and_price)
+                route = route_and_price[0]
+                price = route_and_price[1]
+
             else:
                 log("Unknown flight format", "danger")
                 continue
@@ -75,3 +82,31 @@ def specific_dates(text):
             ))
 
     return flight_list_dict
+
+
+def get_prices_from_string(string: str):
+    # transforms 1 voksen4654kr4377kr into [4654, 4377]
+    prices = re.findall(r'\d+(?=kr)', string)
+    # Converting the found strings to integers
+    prices = [int(price) for price in prices]
+
+    return prices
+
+
+def extract_flight_info(flight_string):
+    # Extracts OSL–PDL4654kr into [OSL–PDL, 4654]
+    # Extracting the airport codes
+    airport_codes = re.search(r'[A-Z]{3}–[A-Z]{3}', flight_string)
+    if airport_codes:
+        airport_codes = airport_codes.group()
+    else:
+        airport_codes = None
+
+    # Extracting the price
+    price = re.search(r'\d+', flight_string)
+    if price:
+        price = int(price.group())
+    else:
+        price = 0
+
+    return [airport_codes, price]

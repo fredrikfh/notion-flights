@@ -3,3 +3,5 @@ requests
 bs4
 notion_client
 cachetools
+datetime
+babel

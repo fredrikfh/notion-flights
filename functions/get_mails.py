@@ -6,12 +6,13 @@ import quopri
 from contextlib import closing
 from email.header import decode_header
 
-from dateutil.parser import parse
+# from dateutil.parser import parse
 
 from functions.console import log
 from functions.get_html import get_data_from_html
 from functions.mail_parsers.non_specific_dates import non_specific_dates
 from functions.mail_parsers.specific_dates import specific_dates
+from functions.mail_parsers.specific_flights import specific_flights
 from functions.parse_date import parse_date
 
 TEXT_PLAIN = "text/plain"
@@ -75,10 +76,16 @@ def get_mails(number: int):
 
                                 route = find_words_around_til(html_content)
 
-                                if "Prisene er endret for følgende destinasjoner" in html_content:
+                                if "Flyreisen du sporer" in html_content:
+                                    log("specific flights", "warning")
+                                    parsed_data.append(
+                                        specific_flights(html_data))
+
+                                elif "Prisene er endret for følgende destinasjoner" in html_content:
                                     log("specific dates", "warning")
                                     parsed_data.append(
                                         specific_dates(html_data))
+
                                 elif "Vi har funnet" in html_content:
                                     log("non-specific dates", "warning")
                                     parsed_data.append(
